@@ -1,4 +1,4 @@
-export default {
+const FOS = {
   addPlaceholder(sticker) {
     const positionRules = ['width', 'height', 'margin'];
     const stickerStyle = window.getComputedStyle(sticker);
@@ -26,11 +26,11 @@ export default {
     const isAfterRef = bottomRef && bottomRef.getBoundingClientRect().bottom < offsetHeight;
 
     if (!sticker.placeholder && isAfterSticker && !isAfterRef) {
-      addPlaceholder(sticker);
+      this.addPlaceholder(sticker);
       sticker.classList.add('sticky');
     }
     else if (sticker.placeholder && (!isAfterSticker || isAfterRef)) {
-      removePlaceholder(sticker)
+      this.removePlaceholder(sticker)
       sticker.classList.remove('sticky');
     }
   },
@@ -39,13 +39,16 @@ export default {
     if ( sticker.stick ) {
       return;
     }
-    sticker.stick = (e) => watchSticker(e, sticker);
+    sticker.stick = (e) => this.watchSticker(e, sticker);
     sticker.bottomRef = document.querySelector(sticker.getAttribute('data-fos-bottomref'));
     window.addEventListener('scroll', sticker.stick);
   },
 
   discoverAll() {
+    const fixOnScroll = this.fixOnScroll.bind(this);
     const elements = [].slice.call(document.querySelectorAll('[data-fos]'), 0);
-    elements.forEach(fixOnScroll)
+    elements.forEach(fixOnScroll);
   },
-}
+};
+
+export default FOS;
