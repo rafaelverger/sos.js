@@ -33,11 +33,16 @@ function watchSticker(evt, sticker) {
   }
 };
 
-function init() {
+function fixOnScroll(sticker) {
+  if ( sticker.stick ) {
+    return;
+  }
+  sticker.stick = (e) => watchSticker(e, sticker);
+  sticker.bottomRef = document.querySelector(sticker.getAttribute('data-fos-bottomref'));
+  window.addEventListener('scroll', sticker.stick);
+}
+
+function discoverAll() {
   const elements = [].slice.call(document.querySelectorAll('[data-fos]'), 0);
-  elements.forEach((element) => {
-    element.stick = (e) => watchSticker(e, element);
-    element.bottomRef = document.querySelector(element.getAttribute('data-fos-bottomref'));
-    window.addEventListener('scroll', element.stick);
-  });
+  elements.forEach(fixOnScroll)
 }
