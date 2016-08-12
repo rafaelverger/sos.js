@@ -45,7 +45,7 @@ const FOS = {
   },
 
   discoverAll() {
-    const fixOnScroll = this.fixOnScroll.bind(this);
+    const fixOnScroll = ::this.fixOnScroll;
     const elements = [].slice.call(document.querySelectorAll('[data-fos]'), 0);
     elements.forEach(fixOnScroll);
   },
