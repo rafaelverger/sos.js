@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import { jsdom } from 'jsdom';
 import sinon from 'sinon';
 
-import fos from '../'
+import fos from '../';
 
 describe('unit', () => {
   describe('placeholder', () => {
@@ -46,7 +46,7 @@ describe('unit', () => {
         parentNode: {
           removeChild: sinon.spy(),
         },
-      }
+      };
       fos.removePlaceholder(mock);
 
       expect(mock.parentNode.removeChild).to.be.calledOnce();
@@ -59,7 +59,7 @@ describe('unit', () => {
         parentNode: {
           removeChild: sinon.spy(),
         },
-      }
+      };
       fos.removePlaceholder(mock);
       expect(mock.parentNode.removeChild).to.not.be.called();
     });
@@ -79,7 +79,9 @@ describe('unit', () => {
     it('fixOnScroll', () => {
       const doc = jsdom(`
         <div>
-          <div class="to-be-fixed" id="test" data-fos-bottomref=".sticker-ref">I will be fixed on window's top</div>
+          <div class="to-be-fixed" id="test" data-fos-bottomref=".sticker-ref">
+            I will be fixed on window's top
+          </div>
           <div class="sticker-ref" id="test">I'm a reference</div>
         </div>
       `);
@@ -103,7 +105,7 @@ describe('unit', () => {
     });
 
     it('fixOnScroll already parsed element', () => {
-      const sticker = { stick: 1 }
+      const sticker = { stick: 1 };
       const evtListener = sandbox.stub(global.window, 'addEventListener');
       fos.fixOnScroll(sticker);
 
@@ -113,7 +115,9 @@ describe('unit', () => {
     it('discoverAll', () => {
       const doc = jsdom(`
         <div>
-          <div id="test1" data-fos data-fos-bottomref=".sticker-ref">I will be fixed on window's top</div>
+          <div id="test1" data-fos data-fos-bottomref=".sticker-ref">
+            I will be fixed on window's top
+          </div>
           <div class="sticker-ref">Not me!!!</div>
           <div id="test2" data-fos>But I will :D</div>
         </div>
@@ -128,6 +132,5 @@ describe('unit', () => {
       expect(fixOnScrollStub).to.be.calledWith(doc.getElementById('test1'));
       expect(fixOnScrollStub).to.be.calledWith(doc.getElementById('test2'));
     });
-
   });
 });
