@@ -1,8 +1,3 @@
-
-
-const stickers = document.querySelectorAll('[data-sticker]');
-const sticker = stickers[0];
-
 function addPlaceholder(sticker) {
   const positionRules = ['width', 'height', 'margin'];
   const stickerStyle = window.getComputedStyle(sticker);
@@ -17,23 +12,16 @@ function addPlaceholder(sticker) {
 }
 function removePlaceholder(sticker) {
   if ( sticker.placeholder ) {
-    const placeholder = sticker.placeholder;
-    delete sticker.placeholder;
-    console.log(placeholder);
-    sticker.parentNode.removeChild(placeholder);
+    sticker.parentNode.removeChild(sticker.placeholder);
+    sticker.placeholder = undefined;
   }
 }
 
 function watchSticker(evt, sticker) {
-  const stickerPos = sticker.initalPos;
-  const stickerRefPos = sticker.initalRefPos;
-
-  const isAfterSticker = window.pageYOffset >= stickerPos.top;
-  const isAfterRef = stickerRefPos && window.pageYOffset >= stickerRefPos.bottom;
-  console.log(
-    window.pageYOffset, stickerPos.top, stickerRefPos.bottom,
-    isAfterSticker, isAfterRef, !!sticker.placeholder
-  );
+  const { offsetHeight, bottomRef } = sticker;
+  const top = (sticker.placeholder || sticker).getBoundingClientRect().top;
+  const isAfterSticker = top <= 0;
+  const isAfterRef = bottomRef && bottomRef.getBoundingClientRect().bottom < offsetHeight;
 
   if (!sticker.placeholder && isAfterSticker && !isAfterRef) {
     addPlaceholder(sticker);
@@ -45,13 +33,11 @@ function watchSticker(evt, sticker) {
   }
 };
 
-(sticker => {
-  sticker.classList.remove('sticky');
-  delete sticker.placeholder;
-  const stickerRef = document.querySelector(sticker.getAttribute('data-sticker-refs'));
-  sticker.initalPos = sticker.getBoundingClientRect();
-  sticker.initalRefPos = stickerRef.getBoundingClientRect();
-  sticker.stick = (e) => watchSticker(e, sticker);
-})(sticker)
-window.removeEventListener('scroll', sticker.stick);
-window.addEventListener('scroll', sticker.stick);
+function init() {
+  const elements = [].slice.call(document.querySelectorAll('[data-fos]'), 0);
+  elements.forEach((element) => {
+    element.stick = (e) => watchSticker(e, element);
+    element.bottomRef = document.querySelector(element.getAttribute('data-fos-bottomref'));
+    window.addEventListener('scroll', element.stick);
+  });
+}
