@@ -1,29 +1,44 @@
 /* global window document */
 const FOS = {
+  scrollTimeout: 100,
+  watchStickerTimeout: undefined,
+
   addPlaceholder(sticker) {
-    const positionRules = ['width', 'height', 'margin'];
+    const positionRules = ['width', 'height', 'margin-top', 'margin-bottom'];
     const stickerStyle = window.getComputedStyle(sticker);
     const placeholder = document.createElement('div');
 
     for (let i = stickerStyle.length - 1; i >= 0; i--) {
       const rule = stickerStyle[i];
-      if (positionRules.includes(rule)) {
+      if (positionRules.indexOf(rule) > -1) {
         placeholder.style[rule] = stickerStyle.getPropertyValue(rule);
       }
     }
 
+    /* eslint-disable no-param-reassign */
     sticker.parentNode.insertBefore(placeholder, sticker);
-    sticker.placeholder = placeholder; // eslint-disable-line no-param-reassign
+    sticker.placeholder = placeholder;
+    sticker.className += ' sticky';
+    /* eslint-enable no-param-reassign */
+
+    const evt = new CustomEvent('stickyToggle', { detail: { sticky: true }, bubbles: true });
+    sticker.dispatchEvent(evt);
   },
 
   removePlaceholder(sticker) {
+    /* eslint-disable no-param-reassign */
     if (sticker.placeholder) {
       sticker.parentNode.removeChild(sticker.placeholder);
-      sticker.placeholder = undefined; // eslint-disable-line no-param-reassign
+      sticker.placeholder = undefined;
     }
+    sticker.className = sticker.className.replace(/(\b)sticky(\b)/g, '$1$2').trim();
+    /* eslint-enable no-param-reassign */
+    const evt = new CustomEvent('stickyToggle', { detail: { sticky: false }, bubbles: true });
+    sticker.dispatchEvent(evt);
   },
 
   watchSticker(evt, sticker) {
+    this.watchStickerTimeout = undefined;
     const { offsetHeight, bottomRef } = sticker;
     const top = (sticker.placeholder || sticker).getBoundingClientRect().top;
     const isAfterSticker = top <= 0;
@@ -32,10 +47,8 @@ const FOS = {
 
     if (!sticker.placeholder && isInsideArea) {
       this.addPlaceholder(sticker);
-      sticker.classList.add('sticky');
     } else if (sticker.placeholder && !isInsideArea) {
       this.removePlaceholder(sticker);
-      sticker.classList.remove('sticky');
     }
   },
 
@@ -44,7 +57,13 @@ const FOS = {
       return;
     }
     /* eslint-disable no-param-reassign */
-    sticker.stick = (e) => this.watchSticker(e, sticker);
+    sticker.stick = (e) => {
+      if (!this.watchStickerTimeout) {
+        this.watchStickerTimeout = window.setTimeout(() => {
+          this.watchSticker(e, sticker);
+        }, this.scrollTimeout);
+      }
+    };
     sticker.bottomRef = document.querySelector(sticker.getAttribute('data-fos-bottomref'));
     /* eslint-enable no-param-reassign */
     window.addEventListener('scroll', sticker.stick);
