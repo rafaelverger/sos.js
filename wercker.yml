@@ -16,9 +16,10 @@ publish:
         token: $GITHUB_TOKEN
         tag: $APP_VERSION
     - script:
-        name: build pkg content
+        name: publishing to NPM
         code: |
           mkdir dist
           npm run build
-          npm publish
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
+          npm publish ./
 
