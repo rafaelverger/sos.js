@@ -7,9 +7,7 @@
     "test": "npm run lint && npm run test:strict",
     "lint": "eslint --ext .js test index.js",
     "test:strict": "mocha test/unit.js",
-    "build": "npm run build:module && npm run build:browser",
-    "build:module": "babel index.js | babili > dist/index.js",
-    "build:browser": "echo \"window.SOS=require('./dist/index.js');\" | browserify - > dist/sos.js"
+    "build": "babel index.js | babili > dist/index.js"
   },
   "repository": {
     "type": "git",
@@ -36,7 +34,6 @@
     "babel-plugin-transform-function-bind": "^6.22.0",
     "babel-preset-env": "^1.5.1",
     "babili": "^0.1.1",
-    "browserify": "^14.3.0",
     "chai": "3.5.0",
     "dirty-chai": "1.2.2",
     "eslint": "3.2.2",
