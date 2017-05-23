@@ -1,5 +1,5 @@
 {
-  "name": "stick-on-scroll",
+  "name": "sos.js",
   "version": "0.1.0",
   "description": "JS lib (dependency free) to Stick elements On Scroll",
   "main": "dist/index.js",
