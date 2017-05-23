@@ -1,12 +1,15 @@
 {
   "name": "stick-on-scroll",
   "version": "0.1.0",
-  "description": "JS lib (dependency free) to stick elements on scroll Edit",
-  "main": "lib/index.js",
+  "description": "JS lib (dependency free) to Stick elements On Scroll",
+  "main": "dist/index.js",
   "scripts": {
     "test": "npm run lint && npm run test:strict",
     "lint": "eslint --ext .js test index.js",
-    "test:strict": "mocha test/unit.js"
+    "test:strict": "mocha test/unit.js",
+    "build": "npm run build:module && npm run build:browser",
+    "build:module": "babel index.js | babili > dist/index.js",
+    "build:browser": "echo \"window.SOS=require('./dist/index.js');\" | browserify - > dist/sos.js"
   },
   "repository": {
     "type": "git",
@@ -27,11 +30,13 @@
   },
   "homepage": "https://github.com/rafaelverger/sos.js",
   "devDependencies": {
-    "babel-cli": "6.11.4",
-    "babel-eslint": "6.1.2",
+    "babel-cli": "^6.24.1",
+    "babel-eslint": "^7.2.3",
     "babel-plugin-add-module-exports": "0.2.1",
-    "babel-plugin-transform-function-bind": "6.8.0",
-    "babel-preset-es2015": "6.13.2",
+    "babel-plugin-transform-function-bind": "^6.22.0",
+    "babel-preset-env": "^1.5.1",
+    "babili": "^0.1.1",
+    "browserify": "^14.3.0",
     "chai": "3.5.0",
     "dirty-chai": "1.2.2",
     "eslint": "3.2.2",

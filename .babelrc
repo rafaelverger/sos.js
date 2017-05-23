@@ -1,7 +1,13 @@
 {
-  "presets": ["es2015"],
+  "presets": [
+    ["env", {
+      "targets": {
+        "browsers": ["last 2 versions"]
+      }
+    }]
+  ],
   "plugins": [
     "add-module-exports",
-    "transform-function-bind",
+    "transform-function-bind"
   ]
 }
