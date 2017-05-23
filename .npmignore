@@ -1,0 +1,6 @@
+tests/
+.babelrc
+.eslintrc
+.gitignore
+index.js
+wercker.ymal
