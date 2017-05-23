@@ -1,7 +1,7 @@
 {
-  "name": "fix-on-scroll",
+  "name": "stick-on-scroll",
   "version": "0.1.0",
-  "description": "Fix on window top any element when scrolls hits it",
+  "description": "JS lib (dependency free) to stick elements on scroll Edit",
   "main": "lib/index.js",
   "scripts": {
     "test": "npm run lint && npm run test:strict",
@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rafaelverger/fix-on-scroll.git"
+    "url": "git+https://github.com/rafaelverger/sos.js.git"
   },
   "keywords": [
     "sticker",
@@ -23,9 +23,9 @@
   "author": "rafaelverger",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/rafaelverger/fix-on-scroll/issues"
+    "url": "https://github.com/rafaelverger/sos.js/issues"
   },
-  "homepage": "https://github.com/rafaelverger/fix-on-scroll#readme",
+  "homepage": "https://github.com/rafaelverger/sos.js",
   "devDependencies": {
     "babel-cli": "6.11.4",
     "babel-eslint": "6.1.2",

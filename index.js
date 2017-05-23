@@ -1,5 +1,5 @@
 /* global window document */
-const FOS = {
+const SOS = {
   scrollTimeout: 100,
   watchStickerTimeout: undefined,
   assistedPositionRules: [
@@ -16,7 +16,7 @@ const FOS = {
 
     for (let i = stickerStyle.length - 1; i >= 0; i--) {
       const rule = stickerStyle[i];
-      if (FOS.assistedPositionRules.indexOf(rule) > -1) {
+      if (SOS.assistedPositionRules.indexOf(rule) > -1) {
         placeholder.style[rule] = stickerStyle.getPropertyValue(rule);
       }
     }
@@ -27,7 +27,7 @@ const FOS = {
     sticker.className += ' sticky';
     /* eslint-enable no-param-reassign */
 
-    const evt = new window.CustomEvent('stickyToggle', FOS.genEventDetail(true));
+    const evt = new window.CustomEvent('stickyToggle', SOS.genEventDetail(true));
     sticker.dispatchEvent(evt);
   },
 
@@ -40,7 +40,7 @@ const FOS = {
     sticker.className = sticker.className.replace(/(\b)sticky(\b)/g, '$1$2').trim();
     /* eslint-enable no-param-reassign */
 
-    const evt = new window.CustomEvent('stickyToggle', FOS.genEventDetail(false));
+    const evt = new window.CustomEvent('stickyToggle', SOS.genEventDetail(false));
     sticker.dispatchEvent(evt);
   },
 
@@ -59,7 +59,7 @@ const FOS = {
     }
   },
 
-  fixOnScroll(sticker) {
+  stickOnScroll(sticker) {
     if (sticker.stick) {
       return;
     }
@@ -77,10 +77,10 @@ const FOS = {
   },
 
   discoverAll() {
-    const fixOnScroll = ::this.fixOnScroll;
+    const stickOnScroll = ::this.stickOnScroll;
     const elements = [].slice.call(document.querySelectorAll('[data-fos]'), 0);
-    elements.forEach(fixOnScroll);
+    elements.forEach(stickOnScroll);
   },
 };
 
-export default FOS;
+export default SOS;

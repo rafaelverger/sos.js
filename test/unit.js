@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import { jsdom } from 'jsdom';
 import sinon from 'sinon';
 
-import FOS from '../';
+import SOS from '../';
 
 describe('unit', () => {
   describe('placeholder', () => {
@@ -28,7 +28,7 @@ describe('unit', () => {
 
     it('add', () => {
       const sticker = global.document.getElementById('test');
-      FOS.addPlaceholder(sticker);
+      SOS.addPlaceholder(sticker);
 
       const children = global.document.querySelector('.root').children;
       expect(children).to.have.length(2);
@@ -51,13 +51,13 @@ describe('unit', () => {
           removeChild: sinon.spy(),
         },
       };
-      FOS.removePlaceholder(mock);
+      SOS.removePlaceholder(mock);
 
       expect(mock.className).to.be.equal('something');
       expect(mock.placeholder).to.be.undefined();
       expect(mock.dispatchEvent).to.be.calledOnce();
       expect(mock.dispatchEvent).to.be.calledWithExactly(
-        new global.window.CustomEvent('stickyToggle', FOS.genEventDetail(false))
+        new global.window.CustomEvent('stickyToggle', SOS.genEventDetail(false))
       );
       expect(mock.parentNode.removeChild).to.be.calledOnce();
       expect(mock.parentNode.removeChild).to.be.calledWithExactly(rand);
@@ -71,7 +71,7 @@ describe('unit', () => {
           removeChild: sinon.spy(),
         },
       };
-      FOS.removePlaceholder(mock);
+      SOS.removePlaceholder(mock);
       expect(mock.parentNode.removeChild).to.not.be.called();
     });
   });
@@ -100,13 +100,13 @@ describe('unit', () => {
       global.releaseDOM();
     });
 
-    it('fixOnScroll', () => {
-      const watchStickerStub = sandbox.stub(FOS, 'watchSticker');
+    it('stickOnScroll', () => {
+      const watchStickerStub = sandbox.stub(SOS, 'watchSticker');
       const evtListener = sandbox.stub(global.window, 'addEventListener');
 
       const sticker = global.document.getElementById('test1');
       const stickerRef = global.document.querySelector('.sticker-ref');
-      FOS.fixOnScroll(sticker);
+      SOS.stickOnScroll(sticker);
 
       expect(sticker.bottomRef).to.be.equal(stickerRef);
       expect(evtListener).to.be.calledOnce();
@@ -114,26 +114,26 @@ describe('unit', () => {
 
       const rand = Math.random();
       sticker.stick(rand);
-      sandbox.clock.tick(FOS.scrollTimeout);
+      sandbox.clock.tick(SOS.scrollTimeout);
       expect(watchStickerStub).to.be.calledOnce();
       expect(watchStickerStub).to.be.calledWithExactly(rand, sticker);
     });
 
-    it('fixOnScroll already parsed element', () => {
+    it('stickOnScroll already parsed element', () => {
       const sticker = { stick: 1 };
       const evtListener = sandbox.stub(global.window, 'addEventListener');
-      FOS.fixOnScroll(sticker);
+      SOS.stickOnScroll(sticker);
 
       expect(evtListener).to.not.be.called();
     });
 
     it('discoverAll', () => {
-      const fixOnScrollStub = sandbox.stub(FOS, 'fixOnScroll');
-      FOS.discoverAll();
+      const stickOnScrollStub = sandbox.stub(SOS, 'stickOnScroll');
+      SOS.discoverAll();
 
-      expect(fixOnScrollStub).to.be.calledTwice();
-      expect(fixOnScrollStub).to.be.calledWith(global.document.getElementById('test1'));
-      expect(fixOnScrollStub).to.be.calledWith(global.document.getElementById('test2'));
+      expect(stickOnScrollStub).to.be.calledTwice();
+      expect(stickOnScrollStub).to.be.calledWith(global.document.getElementById('test1'));
+      expect(stickOnScrollStub).to.be.calledWith(global.document.getElementById('test2'));
     });
   });
 });
