@@ -5,3 +5,18 @@ build:
   steps:
     - npm-install
     - npm-test
+
+publish:
+  steps:
+    - script:
+        name: define version
+        code: |
+          APP_VERSION=v`node -e 'console.log(require("./package.json").version)'`
+    - github-create-release:
+        token: $GITHUB_TOKEN
+        tag: $APP_VERSION
+    - script:
+        code: mkdir dist
+    - maxon/npm-run: build
+    - npm-publish
+
