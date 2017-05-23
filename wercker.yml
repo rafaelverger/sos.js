@@ -20,5 +20,5 @@ publish:
         code: |
           mkdir dist
           npm run build
-    - npm-publish
+          npm publish
 
