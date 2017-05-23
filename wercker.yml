@@ -5,6 +5,12 @@ build:
   steps:
     - npm-install
     - npm-test
+    - script:
+        name: building pkg content
+        code: |
+          mkdir dist
+          npm run build
+          ls -las dist/
 
 publish:
   steps:
@@ -18,8 +24,5 @@ publish:
     - script:
         name: publishing to NPM
         code: |
-          mkdir dist
-          npm run build
           echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
           npm publish ./
-
