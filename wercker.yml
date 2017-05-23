@@ -1,0 +1,7 @@
+box: node
+
+# merge steps to optimize the use of wercker queue
+build:
+  steps:
+    - npm-install
+    - npm-test
