@@ -2,15 +2,21 @@
 const FOS = {
   scrollTimeout: 100,
   watchStickerTimeout: undefined,
+  assistedPositionRules: [
+    'display',
+    'width', 'height',
+    'margin', 'margin-top', 'margin-right', 'margin-bottom', 'margin-left',
+  ],
+
+  genEventDetail: (sticky) => ({ detail: { sticky }, bubbles: true }),
 
   addPlaceholder(sticker) {
-    const positionRules = ['width', 'height', 'margin-top', 'margin-bottom'];
     const stickerStyle = window.getComputedStyle(sticker);
     const placeholder = document.createElement('div');
 
     for (let i = stickerStyle.length - 1; i >= 0; i--) {
       const rule = stickerStyle[i];
-      if (positionRules.indexOf(rule) > -1) {
+      if (FOS.assistedPositionRules.indexOf(rule) > -1) {
         placeholder.style[rule] = stickerStyle.getPropertyValue(rule);
       }
     }
@@ -21,7 +27,7 @@ const FOS = {
     sticker.className += ' sticky';
     /* eslint-enable no-param-reassign */
 
-    const evt = new CustomEvent('stickyToggle', { detail: { sticky: true }, bubbles: true });
+    const evt = new window.CustomEvent('stickyToggle', FOS.genEventDetail(true));
     sticker.dispatchEvent(evt);
   },
 
@@ -33,7 +39,8 @@ const FOS = {
     }
     sticker.className = sticker.className.replace(/(\b)sticky(\b)/g, '$1$2').trim();
     /* eslint-enable no-param-reassign */
-    const evt = new CustomEvent('stickyToggle', { detail: { sticky: false }, bubbles: true });
+
+    const evt = new window.CustomEvent('stickyToggle', FOS.genEventDetail(false));
     sticker.dispatchEvent(evt);
   },
 

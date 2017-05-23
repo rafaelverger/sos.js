@@ -4,11 +4,11 @@ import { expect } from 'chai';
 import { jsdom } from 'jsdom';
 import sinon from 'sinon';
 
-import fos from '../';
+import FOS from '../';
 
 describe('unit', () => {
   describe('placeholder', () => {
-    it('add', () => {
+    beforeEach(() => {
       const doc = jsdom(`
         <style class="text/css">
           .to-be-fixed {
@@ -21,14 +21,16 @@ describe('unit', () => {
           <div class="to-be-fixed" id="test">I will be fixed on window's top</div>
         </div>
       `);
-      const sticker = doc.getElementById('test');
+      global.mockDOM(doc);
+    });
 
-      global.document = doc;
-      global.window = doc.defaultView;
+    afterEach(global.releaseDOM);
 
-      fos.addPlaceholder(sticker);
+    it('add', () => {
+      const sticker = global.document.getElementById('test');
+      FOS.addPlaceholder(sticker);
 
-      const children = doc.querySelector('.root').children;
+      const children = global.document.querySelector('.root').children;
       expect(children).to.have.length(2);
 
       expect(children[1]).to.be.equal(sticker);
@@ -42,25 +44,34 @@ describe('unit', () => {
     it('remove', () => {
       const rand = Math.random();
       const mock = {
+        className: 'sticky something',
         placeholder: rand,
+        dispatchEvent: sinon.spy(),
         parentNode: {
           removeChild: sinon.spy(),
         },
       };
-      fos.removePlaceholder(mock);
+      FOS.removePlaceholder(mock);
 
+      expect(mock.className).to.be.equal('something');
+      expect(mock.placeholder).to.be.undefined();
+      expect(mock.dispatchEvent).to.be.calledOnce();
+      expect(mock.dispatchEvent).to.be.calledWithExactly(
+        new global.window.CustomEvent('stickyToggle', FOS.genEventDetail(false))
+      );
       expect(mock.parentNode.removeChild).to.be.calledOnce();
       expect(mock.parentNode.removeChild).to.be.calledWithExactly(rand);
-      expect(mock.placeholder).to.be.undefined();
     });
 
     it('remove without placeholder', () => {
       const mock = {
+        className: 'sticky something',
+        dispatchEvent: sinon.spy(),
         parentNode: {
           removeChild: sinon.spy(),
         },
       };
-      fos.removePlaceholder(mock);
+      FOS.removePlaceholder(mock);
       expect(mock.parentNode.removeChild).to.not.be.called();
     });
   });
@@ -70,49 +81,8 @@ describe('unit', () => {
 
     beforeEach(() => {
       sandbox = sinon.sandbox.create();
-    });
+      sandbox.useFakeTimers();
 
-    afterEach(() => {
-      sandbox.restore();
-    });
-
-    it('fixOnScroll', () => {
-      const doc = jsdom(`
-        <div>
-          <div class="to-be-fixed" id="test" data-fos-bottomref=".sticker-ref">
-            I will be fixed on window's top
-          </div>
-          <div class="sticker-ref" id="test">I'm a reference</div>
-        </div>
-      `);
-      global.document = doc;
-      global.window = doc.defaultView;
-
-      const watchStickerStub = sandbox.stub(fos, 'watchSticker');
-      const evtListener = sandbox.stub(global.window, 'addEventListener');
-
-      const sticker = doc.getElementById('test');
-      fos.fixOnScroll(sticker);
-
-      expect(sticker.bottomRef).to.be.equal(doc.querySelector('.sticker-ref'));
-      expect(evtListener).to.be.calledOnce();
-      expect(evtListener).to.be.calledWithExactly('scroll', sticker.stick);
-
-      const rand = Math.random();
-      sticker.stick(rand);
-      expect(watchStickerStub).to.be.calledOnce();
-      expect(watchStickerStub).to.be.calledWithExactly(rand, sticker);
-    });
-
-    it('fixOnScroll already parsed element', () => {
-      const sticker = { stick: 1 };
-      const evtListener = sandbox.stub(global.window, 'addEventListener');
-      fos.fixOnScroll(sticker);
-
-      expect(evtListener).to.not.be.called();
-    });
-
-    it('discoverAll', () => {
       const doc = jsdom(`
         <div>
           <div id="test1" data-fos data-fos-bottomref=".sticker-ref">
@@ -122,15 +92,48 @@ describe('unit', () => {
           <div id="test2" data-fos>But I will :D</div>
         </div>
       `);
-      global.document = doc;
-      global.window = doc.defaultView;
+      global.mockDOM(doc);
+    });
 
-      const fixOnScrollStub = sandbox.stub(fos, 'fixOnScroll');
-      fos.discoverAll();
+    afterEach(() => {
+      sandbox.restore();
+      global.releaseDOM();
+    });
+
+    it('fixOnScroll', () => {
+      const watchStickerStub = sandbox.stub(FOS, 'watchSticker');
+      const evtListener = sandbox.stub(global.window, 'addEventListener');
+
+      const sticker = global.document.getElementById('test1');
+      const stickerRef = global.document.querySelector('.sticker-ref');
+      FOS.fixOnScroll(sticker);
+
+      expect(sticker.bottomRef).to.be.equal(stickerRef);
+      expect(evtListener).to.be.calledOnce();
+      expect(evtListener).to.be.calledWithExactly('scroll', sticker.stick);
+
+      const rand = Math.random();
+      sticker.stick(rand);
+      sandbox.clock.tick(FOS.scrollTimeout);
+      expect(watchStickerStub).to.be.calledOnce();
+      expect(watchStickerStub).to.be.calledWithExactly(rand, sticker);
+    });
+
+    it('fixOnScroll already parsed element', () => {
+      const sticker = { stick: 1 };
+      const evtListener = sandbox.stub(global.window, 'addEventListener');
+      FOS.fixOnScroll(sticker);
+
+      expect(evtListener).to.not.be.called();
+    });
+
+    it('discoverAll', () => {
+      const fixOnScrollStub = sandbox.stub(FOS, 'fixOnScroll');
+      FOS.discoverAll();
 
       expect(fixOnScrollStub).to.be.calledTwice();
-      expect(fixOnScrollStub).to.be.calledWith(doc.getElementById('test1'));
-      expect(fixOnScrollStub).to.be.calledWith(doc.getElementById('test2'));
+      expect(fixOnScrollStub).to.be.calledWith(global.document.getElementById('test1'));
+      expect(fixOnScrollStub).to.be.calledWith(global.document.getElementById('test2'));
     });
   });
 });
