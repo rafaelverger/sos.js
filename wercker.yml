@@ -16,7 +16,9 @@ publish:
         token: $GITHUB_TOKEN
         tag: $APP_VERSION
     - script:
-        code: mkdir dist
-    - maxon/npm-run: build
+        name: build pkg content
+        code: |
+          mkdir dist
+          npm run build
     - npm-publish
 
