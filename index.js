@@ -45,7 +45,7 @@ const SOS = {
   },
 
   watchSticker(evt, sticker) {
-    this.watchStickerTimeout = undefined;
+    sticker.watchStickerTimeout = undefined;
     const { offsetHeight, bottomRef } = sticker;
     const top = (sticker.placeholder || sticker).getBoundingClientRect().top;
     const isAfterSticker = top <= 0;
@@ -66,7 +66,7 @@ const SOS = {
     /* eslint-disable no-param-reassign */
     sticker.stick = (e) => {
       if (!this.watchStickerTimeout) {
-        this.watchStickerTimeout = window.setTimeout(() => {
+        sticker.watchStickerTimeout = window.setTimeout(() => {
           this.watchSticker(e, sticker);
         }, this.scrollTimeout);
       }
