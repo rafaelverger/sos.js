@@ -45,7 +45,9 @@ const SOS = {
   },
 
   watchSticker(evt, sticker) {
+    /* eslint-disable no-param-reassign */
     sticker.watchStickerTimeout = undefined;
+    /* eslint-enable no-param-reassign */
     const { offsetHeight, bottomRef } = sticker;
     const top = (sticker.placeholder || sticker).getBoundingClientRect().top;
     const isAfterSticker = top <= 0;
